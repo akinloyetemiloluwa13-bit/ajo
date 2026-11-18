@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprout — Banking and Saving</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#16311f; --forest-deep:#0e2216; --cream:#f6f1e2; --gold:#c9a227; --coral:#c85a3b; --sage:#93b59a; --ink:#12200f;
+  --disp:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 1.05rem/1.6 var(--body)}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1.4rem 0}
+.brand{display:flex;align-items:center;gap:.5rem;font:600 1.3rem var(--disp);text-decoration:none}
+nav .links a{margin-left:1.4rem;text-decoration:none;font-weight:500;color:var(--forest)}
+.btn{display:inline-block;background:var(--forest);color:var(--cream);font-weight:600;padding:.8rem 1.5rem;border-radius:8px;text-decoration:none;border:0;cursor:pointer;font-family:var(--body)}
+.btn.gold{background:var(--gold);color:var(--forest-deep)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;padding:3rem 0 4.5rem}
+.hero h1{font:500 clamp(2.4rem,5vw,4rem)/1.05 var(--disp);margin:0 0 1.2rem;max-width:14ch}
+.hero h1 em{font-style:italic;color:var(--coral)}
+.hero p{max-width:38ch;font-size:1.15rem;margin:0 0 1.8rem;color:#3a4a3c}
+.cta-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.panel{background:var(--forest);border-radius:20px;padding:2rem;color:var(--cream)}
+.panel .label{font-size:.85rem;color:var(--sage);margin:0 0 .3rem}
+.balance{font:500 clamp(2.2rem,4.5vw,3.2rem) var(--disp);margin:0 0 1.6rem}
+.chart{display:flex;align-items:flex-end;gap:.6rem;height:150px;border-bottom:1px solid rgba(246,241,226,.25)}
+.chart .bar{flex:1;background:linear-gradient(180deg,var(--gold),#a9821e);border-radius:4px 4px 0 0;height:var(--h)}
+.months{display:flex;gap:.6rem;margin-top:.5rem;font-size:.75rem;color:var(--sage)}
+.months span{flex:1;text-align:center}
+.strip{background:var(--forest-deep);color:var(--sage);padding:.9rem 0}
+.strip .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem 2rem}
+section{padding:4rem 0}
+h2{font:500 clamp(1.8rem,4vw,2.7rem) var(--disp);margin:0 0 .7rem}
+.lead{max-width:54ch;color:#3a4a3c;margin:0 0 2rem}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:2rem;background:#fff;border:1px solid #e4dcc4;border-radius:20px;padding:2rem}
+.row{margin-bottom:1.4rem}
+label{display:block;font-weight:600;margin-bottom:.4rem}
+input[type=range]{width:100%;accent-color:var(--coral)}
+.val{font:500 1.5rem var(--disp);color:var(--forest)}
+.calc-result{text-align:center}
+.amount{font:500 3rem var(--disp);color:var(--forest);margin:0}
+.rates{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.rate-card{border-radius:16px;padding:1.6rem;background:var(--forest);color:var(--cream)}
+.rate-card.alt{background:var(--coral)}
+.rate-card .pct{font:500 2.6rem var(--disp);margin:.2rem 0}
+.closing{background:var(--forest);color:var(--cream);border-radius:24px;padding:3rem 2.2rem}
+footer{padding:2rem 0 3rem;color:#5c6b5e;font-size:.88rem;display:flex;justify-content:space-between;flex-wrap:wrap}
+@media(max-width:820px){.hero,.calc{grid-template-columns:1fr}}
+.money-rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.money{position:absolute;top:-40px;font-size:1.4rem;opacity:.55;animation:fall linear infinite}
+@keyframes fall{
+  0%{transform:translateY(-40px) rotate(0deg);opacity:0}
+  10%{opacity:.7}
+  100%{transform:translateY(110vh) rotate(360deg);opacity:.15}
+}
+.wrap,.strip,main,footer{position:relative;z-index:1}
+</style>
+</head>
+<body>
+  <div class="money-rain" id="moneyRain" aria-hidden="true"></div>
+<div class="wrap">
+<nav>
+  <a class="brand" href="savings-bank.html">Sprout × Taveed</a>
+  <div class="links">
+    <a href="#calculator">Calculator</a>
+    <a href="login.html">Log in</a>
+    <a class="btn" href="login.html">Open account</a>
+  </div>
+</nav>
+<header class="hero">
+  <div>
+    <h1>Banking and <em>saving</em> in one place.</h1>
+    <p>Sprout is for everyday banking and saving: naira and dollar accounts, transfers, airtime, bills, and family circles.</p>
+    <div class="cta-row">
+      <a class="btn gold" href="login.html">Open a banking and saving account</a>
+      <span>4.10% APY on savings</span>
+    </div>
+  </div>
+  <div class="panel">
+    <p class="label">Your balance, this year</p>
+    <p class="balance">$8,214.60</p>
+    <div class="chart">
+      <div class="bar" style="--h:22%"></div>
+      <div class="bar" style="--h:30%"></div>
+      <div class="bar" style="--h:38%"></div>
+      <div class="bar" style="--h:48%"></div>
+      <div class="bar" style="--h:63%"></div>
+      <div class="bar" style="--h:82%"></div>
+      <div class="bar" style="--h:100%"></div>
+    </div>
+    <div class="months"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div>
+  </div>
+</header>
+</div>
+<div class="strip"><div class="wrap"><span>Banking and saving</span><span>4.10% APY</span><span>No monthly fees</span><span>Withdraw anytime</span></div></div>
+<main class="wrap">
+<section id="calculator">
+  <h2>See what daily compounding does</h2>
+  <p class="lead">Move the sliders to estimate your savings balance.</p>
+  <div class="calc">
+    <div>
+      <div class="row"><label>Starting deposit — <span class="val" id="depositVal">$2,000</span></label><input type="range" id="deposit" min="100" max="20000" step="100" value="2000"></div>
+      <div class="row"><label>Monthly deposit — <span class="val" id="monthlyVal">$150</span></label><input type="range" id="monthly" min="0" max="1000" step="10" value="150"></div>
+      <div class="row"><label>Years — <span class="val" id="yearsVal">5</span></label><input type="range" id="years" min="1" max="30" step="1" value="5"></div>
+    </div>
+    <div class="calc-result">
+      <p class="amount" id="resultAmount">$0</p>
+      <p>estimated balance at 4.10% APY</p>
+    </div>
+  </div>
+</section>
+<section>
+  <h2>Banking and saving together</h2>
+  <div class="rates">
+    <div class="rate-card"><h3>Saving</h3><p class="pct">4.10%</p><p>Daily compounding on your savings</p></div>
+    <div class="rate-card alt"><h3>Banking</h3><p class="pct">Pay</p><p>Transfer, airtime, data, and bills</p></div>
+    <div class="rate-card"><h3>Circles</h3><p class="pct">Ajo</p><p>Family, private, and market women plans</p></div>
+  </div>
+</section>
+<section>
+  <div class="closing">
+    <h2>Open a banking and saving account.</h2>
+    <p>Bank every day. Save over time. Start a circle when you are ready.</p>
+    <a class="btn gold" href="login.html">Open a Sprout account</a>
+  </div>
+</section>
+</main>
+<div class="wrap"><footer><span>&copy; 2026 Sprout Bank · Demo only</span><span>Rates as of Sep 29, 2026</span></footer></div>
+<script>
+if(localStorage.getItem('sprout_session')){
+  document.querySelectorAll('a[href="login.html"]').forEach(function(a){
+    a.href = 'dashboard.html';
+    a.textContent = a.classList.contains('btn') ? 'Go to dashboard' : 'Dashboard';
+  });
+}
+var deposit=document.getElementById('deposit'), monthly=document.getElementById('monthly'), years=document.getElementById('years');
+var APY=0.041;
+function fmt(n){return '$'+Math.round(n).toLocaleString('en-US')}
+function calc(){
+  var p=Number(deposit.value), m=Number(monthly.value), y=Number(years.value);
+  var days=y*365, rate=APY/365, bal=p;
+  for(var d=0; d<days; d++){ bal*=(1+rate); if(d%30===0) bal+=m; }
+  document.getElementById('depositVal').textContent=fmt(p);
+  document.getElementById('monthlyVal').textContent='$'+m;
+  document.getElementById('yearsVal').textContent=y;
+  document.getElementById('resultAmount').textContent=fmt(bal);
+}
+[deposit,monthly,years].forEach(function(el){el.addEventListener('input',calc)});
+calc();
+(function(){
+  var box=document.getElementById('moneyRain');
+  var bits=['₦','$','💵','🪙'];
+  for(var i=0;i<28;i++){
+    var el=document.createElement('span');
+    el.className='money';
+    el.textContent=bits[i%bits.length];
+    el.style.left=(Math.random()*100)+'%';
+    el.style.fontSize=(1+Math.random()*1.4)+'rem';
+    el.style.animationDuration=(6+Math.random()*7)+'s';
+    el.style.animationDelay=(-Math.random()*8)+'s';
+    box.appendChild(el);
+  }
+})();
+</script>
+</body>
+</html>

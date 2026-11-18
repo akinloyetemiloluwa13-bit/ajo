@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Savings Circles — Sprout × Taveed</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#16311f;--cream:#f6f1e2;--gold:#c9a227;--coral:#c85a3b;--sage:#93b59a;--ink:#12200f;
+--disp:'Fraunces',Georgia,serif;--body:'IBM Plex Sans',system-ui,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 1rem/1.6 var(--body)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 1.5rem}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1.3rem 0}
+.brand{font:600 1.25rem var(--disp)}
+.who{display:flex;align-items:center;gap:1rem;font-size:.9rem}
+.btn{border:0;border-radius:8px;font:600 .95rem var(--body);padding:.7rem 1.2rem;cursor:pointer}
+.btn.primary{background:var(--forest);color:var(--cream)}
+.btn.ghost{background:transparent;color:var(--forest);border:1px solid #d8cfae}
+h1{font:500 1.7rem var(--disp);margin:1.2rem 0 .4rem}
+.lead{color:#5c6b5e;max-width:54ch;margin:0 0 1.4rem}
+.plans{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.plan{background:#fff;border:2px solid #e4dcc4;border-radius:14px;padding:.9rem .7rem;cursor:pointer;text-align:center;font:600 .9rem var(--body);color:var(--forest)}
+.plan small{display:block;font-weight:400;color:#5c6b5e;margin-top:.3rem}
+.plan.active{border-color:var(--gold);background:#fff8e1}
+.newcircle,.circle-card{background:#fff;border:1px solid #e4dcc4;border-radius:16px;padding:1.4rem;margin-bottom:1.4rem}
+.field{margin-bottom:.9rem}
+label{font-weight:600;font-size:.86rem}
+input,textarea{width:100%;padding:.65rem .8rem;border:1px solid #d8cfae;border-radius:8px;font:400 .95rem var(--body);margin-top:.3rem}
+textarea{min-height:70px}
+.msg{font-size:.82rem;margin-top:.5rem;min-height:1.1em}
+.msg.err{color:var(--coral)}
+.msg.ok{color:var(--forest)}
+.badge{display:inline-block;background:#eef5e8;color:var(--forest);border-radius:999px;padding:.15rem .6rem;font-size:.75rem;font-weight:600;margin-left:.4rem}
+.circle-card h3{margin:0 0 .2rem;font:500 1.2rem var(--disp)}
+.meta{color:#5c6b5e;font-size:.88rem;margin:0 0 1rem}
+.bar{height:10px;background:#eee5cb;border-radius:99px;overflow:hidden;margin:.4rem 0 1rem}
+.bar span{display:block;height:100%;background:var(--gold)}
+.ring{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.member{text-align:center;font-size:.78rem;width:64px}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;font:600 1rem var(--body);margin:0 auto .35rem}
+.member.turn .avatar{background:var(--gold)}
+.member.paid .avatar{background:var(--forest);color:var(--cream)}
+.circle-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.circle-actions select{padding:.6rem .7rem;border:1px solid #d8cfae;border-radius:8px}
+@media(max-width:700px){.plans{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="savings-bank.html">Sprout × Taveed</a>
+  <div class="who">
+    <a href="dashboard.html">Dashboard</a>
+    <span id="whoEmail"></span>
+    <button class="btn ghost" id="logoutBtn">Log out</button>
+  </div>
+</nav>
+
+<h1>Savings circles</h1>
+<p class="lead">Family: monthly turns. Private: one shared pot. Market women: weekly market-day turns.</p>
+
+<div class="plans">
+  <button type="button" class="plan active" data-plan="Family">Family<small>Monthly. One person collects each month.</small></button>
+  <button type="button" class="plan" data-plan="Private">Private<small>All pay into one pot. Nobody collects in turns.</small></button>
+  <button type="button" class="plan" data-plan="Market women">Market women<small>Weekly market day. One person collects each week.</small></button>
+</div>
+
+<div class="newcircle">
+  <h3 style="margin:0 0 1rem;font:500 1.15rem var(--disp)">Start a circle</h3>
+  <div class="field"><label>Name</label><input id="circleName" placeholder="e.g. Home circle"></div>
+  <div class="field"><label id="amountLabel">Amount each person pays</label><input id="circleAmount" type="number" min="1" placeholder="5000"></div>
+  <div class="field" id="goalField" style="display:none"><label>Pot goal</label><input id="circleGoal" type="number" min="1" placeholder="50000"></div>
+  <div class="field"><label>Members, one name per line</label><textarea id="circleMembers" placeholder="Ada&#10;Bola&#10;Chidi"></textarea></div>
+  <button class="btn primary" id="createCircleBtn">Create</button>
+  <p class="msg" id="circleCreateMsg"></p>
+</div>
+
+<div id="circlesList"></div>
+</div>
+
+<script>
+const session=localStorage.getItem('sprout_session');
+if(!session){window.location.href='login.html';}
+document.getElementById('whoEmail').textContent=session;
+
+let selectedPlan='Family';
+function updateForm(){
+  const priv=selectedPlan==='Private';
+  document.getElementById('goalField').style.display=priv?'block':'none';
+  document.getElementById('amountLabel').textContent=selectedPlan==='Market women'?'Amount each person pays each week':'Amount each person pays';
+}
+document.querySelectorAll('.plan').forEach(btn=>{
+  btn.onclick=function(){
+    document.querySelectorAll('.plan').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    selectedPlan=btn.dataset.plan;
+    updateForm();
+  };
+});
+
+function fmt(n){return '₦'+Number(n).toLocaleString('en-US');}
+const store={
+  load(){return JSON.parse(localStorage.getItem('sprout_circles')||'[]');},
+  save(list){localStorage.setItem('sprout_circles',JSON.stringify(list));}
+};
+function initials(name){return name.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+
+function renderCircles(){
+  const list=store.load();
+  const box=document.getElementById('circlesList');
+  if(list.length===0){box.innerHTML='<p style="color:#8a9a8c">No circles yet.</p>';return;}
+  box.innerHTML=list.map(c=>{
+    if(c.plan==='Private'){
+      const pot=c.pot||0;
+      const goal=c.goal||0;
+      const pct=goal?Math.min(100,Math.round(pot/goal*100)):0;
+      return '<div class="circle-card"><h3>'+c.name+'<span class="badge">Private</span></h3>'
+        +'<p class="meta">Shared pot '+fmt(pot)+(goal?' of '+fmt(goal):'')+' · each pays '+fmt(c.amount)+'</p>'
+        +(goal?'<div class="bar"><span style="width:'+pct+'%"></span></div>':'')
+        +'<div class="circle-actions"><select id="sel-'+c.id+'">'+c.members.map(m=>'<option>'+m+'</option>').join('')+'</select>'
+        +'<button class="btn primary addPotBtn" data-id="'+c.id+'">Add to pot</button></div></div>';
+    }
+    const unit=c.plan==='Market women'?'week':'month';
+    const recipient=c.members[c.round%c.members.length];
+    const avatars=c.members.map(m=>{
+      const paid=c.contributed.includes(m);
+      const isTurn=m===recipient;
+      return '<div class="member '+(isTurn?'turn ':'')+(paid?'paid ':'')+'"><div class="avatar">'+initials(m)+'</div>'+m+'</div>';
+    }).join('');
+    return '<div class="circle-card"><h3>'+c.name+'<span class="badge">'+c.plan+'</span></h3>'
+      +'<p class="meta">'+fmt(c.amount)+' each '+unit+' · '+unit+' '+(c.round+1)+' · pot '+fmt(c.amount*c.members.length)+' goes to <strong>'+recipient+'</strong></p>'
+      +'<div class="ring">'+avatars+'</div>'
+      +'<div class="circle-actions"><select id="sel-'+c.id+'">'+c.members.filter(m=>!c.contributed.includes(m)).map(m=>'<option>'+m+'</option>').join('')+'</select>'
+      +'<button class="btn primary markPaidBtn" data-id="'+c.id+'">'+(c.plan==='Market women'?'Mark market day paid':'Mark month paid')+'</button></div></div>';
+  }).join('');
+  document.querySelectorAll('.markPaidBtn').forEach(btn=>btn.onclick=()=>markPaid(Number(btn.dataset.id)));
+  document.querySelectorAll('.addPotBtn').forEach(btn=>btn.onclick=()=>addPot(Number(btn.dataset.id)));
+}
+
+function markPaid(id){
+  const list=store.load();
+  const c=list.find(x=>x.id===id);
+  const member=document.getElementById('sel-'+id).value;
+  if(!member||c.contributed.includes(member)) return;
+  c.contributed.push(member);
+  if(c.contributed.length===c.members.length){
+    c.contributed=[];
+    c.round+=1;
+  }
+  store.save(list);
+  renderCircles();
+}
+function addPot(id){
+  const list=store.load();
+  const c=list.find(x=>x.id===id);
+  c.pot=(c.pot||0)+c.amount;
+  store.save(list);
+  renderCircles();
+}
+
+document.getElementById('createCircleBtn').onclick=function(){
+  const name=document.getElementById('circleName').value.trim();
+  const amount=parseFloat(document.getElementById('circleAmount').value);
+  const members=document.getElementById('circleMembers').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const msg=document.getElementById('circleCreateMsg');
+  if(!name||!amount||amount<=0||members.length<2){
+    msg.textContent='Add a name, an amount, and at least two members.';msg.className='msg err';return;
+  }
+  const item={id:Date.now(),name,plan:selectedPlan,amount,members,round:0,contributed:[],pot:0};
+  if(selectedPlan==='Private'){
+    item.goal=parseFloat(document.getElementById('circleGoal').value)||amount*members.length*6;
+  }
+  const list=store.load();
+  list.push(item);
+  store.save(list);
+  document.getElementById('circleName').value='';
+  document.getElementById('circleAmount').value='';
+  document.getElementById('circleMembers').value='';
+  msg.textContent=selectedPlan+' circle created.';msg.className='msg ok';
+  renderCircles();
+};
+document.getElementById('logoutBtn').onclick=function(){
+  localStorage.removeItem('sprout_session');
+  window.location.href='login.html';
+};
+updateForm();
+renderCircles();
+</script>
+</body>
+</html>

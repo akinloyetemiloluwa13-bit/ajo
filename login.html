@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Log in — Sprout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#16311f; --forest-deep:#0e2216; --cream:#f6f1e2; --gold:#c9a227; --coral:#c85a3b; --sage:#93b59a; --ink:#12200f;
+  --disp:'Fraunces',Georgia,serif; --body:'IBM Plex Sans',system-ui,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--forest);color:var(--cream);font:400 1.02rem/1.6 var(--body);display:flex}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+.side{flex:1.1;background:var(--forest);position:relative;overflow:hidden;padding:3rem;display:flex;flex-direction:column;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:.5rem;font:600 1.3rem var(--disp)}
+.brand .leaf{width:22px;height:22px}
+.side h1{font:500 clamp(1.9rem,3.4vw,2.7rem)/1.15 var(--disp);max-width:13ch;margin:0 0 .8rem}
+.side p{color:var(--sage);max-width:30ch;margin:0}
+.growth{position:absolute;right:-40px;bottom:-30px;width:340px;opacity:.9}
+.growth .bar{fill:var(--gold);animation:grow 1.3s cubic-bezier(.2,.7,.2,1) forwards;transform-origin:bottom}
+.growth .bar:nth-child(1){animation-delay:.05s}
+.growth .bar:nth-child(2){animation-delay:.15s}
+.growth .bar:nth-child(3){animation-delay:.25s}
+.growth .bar:nth-child(4){animation-delay:.35s}
+.growth .bar:nth-child(5){animation-delay:.45s}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+.main{flex:1;background:var(--cream);color:var(--ink);display:flex;align-items:center;justify-content:center;padding:2.5rem}
+.card{width:100%;max-width:380px}
+.tabs{display:flex;gap:1.6rem;margin-bottom:2rem;border-bottom:1px solid #e4dcc4}
+.tab{background:none;border:0;font:500 1rem var(--body);color:#7a8a7c;padding:.4rem 0 .8rem;cursor:pointer;border-bottom:2px solid transparent}
+.tab[aria-selected="true"]{color:var(--forest);border-color:var(--coral);font-weight:600}
+.card h2{font:500 1.7rem var(--disp);margin:0 0 .3rem}
+.card .sub{color:#5c6b5e;margin:0 0 1.6rem;font-size:.95rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:.88rem;font-weight:600;margin-bottom:.35rem}
+.field input{width:100%;padding:.75rem .9rem;border:1px solid #d8cfae;border-radius:8px;font:400 1rem var(--body);background:#fff;color:var(--ink)}
+.field input:focus{border-color:var(--gold)}
+.field .hint{font-size:.8rem;color:#7a8a7c;margin-top:.3rem}
+.field .err{font-size:.82rem;color:var(--coral);margin-top:.35rem;min-height:1.1em}
+.row-between{display:flex;justify-content:space-between;align-items:center;margin:.2rem 0 1.4rem;font-size:.88rem}
+.row-between a{color:var(--forest);text-decoration:underline;text-decoration-color:var(--sage)}
+.btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;background:var(--forest);color:var(--cream);font-weight:600;padding:.85rem 1.5rem;border-radius:8px;border:0;cursor:pointer;font:600 1rem var(--body);transition:background .15s}
+.btn:hover{background:var(--forest-deep)}
+.btn:disabled{opacity:.75;cursor:default}
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(246,241,226,.4);border-top-color:var(--cream);animation:spin .7s linear infinite;display:none}
+.btn.loading .spinner{display:inline-block}
+.btn.loading .btn-label{opacity:.85}
+@keyframes spin{to{transform:rotate(360deg)}}
+.formnote{margin-top:1.2rem;font-size:.85rem;color:#7a8a7c;text-align:center}
+
+.success{display:none;text-align:center}
+.success.show{display:block}
+.check{width:64px;height:64px;border-radius:50%;background:var(--sage);margin:0 auto 1.2rem;display:flex;align-items:center;justify-content:center}
+.check svg{width:30px;height:30px}
+.check path{stroke:var(--forest-deep);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;animation:tick .4s .1s ease forwards}
+@keyframes tick{to{stroke-dashoffset:0}}
+.success h2{font:500 1.5rem var(--disp);margin:0 0 .4rem}
+.success p{color:#5c6b5e;margin:0 0 1.6rem}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important}}
+@media(max-width:820px){body{flex-direction:column}.side{padding:2rem 1.8rem;min-height:220px}.growth{width:240px}}
+</style>
+</head>
+<body>
+
+<div class="side">
+  <a href="savings-bank.html" class="brand" style="text-decoration:none"><svg class="leaf" viewBox="0 0 24 24" fill="none"><path d="M4 20C4 10 10 4 20 4C20 14 14 20 4 20Z" fill="#c9a227"/><path d="M4 20C8 16 12 12 20 4" stroke="#16311f" stroke-width="1.2"/></svg>Taveed × sprout</a>
+  <div>
+    <h1>Welcome back to your bank × savings</h1>
+    <p>4.10% APY, compounding daily. Log in to see today's balance.</p>
+  </div>
+  <svg class="growth" viewBox="0 0 200 120" aria-hidden="true">
+    <rect class="bar" x="10" y="70" width="24" height="50" rx="3"></rect>
+    <rect class="bar" x="48" y="55" width="24" height="65" rx="3"></rect>
+    <rect class="bar" x="86" y="40" width="24" height="80" rx="3"></rect>
+    <rect class="bar" x="124" y="20" width="24" height="100" rx="3"></rect>
+    <rect class="bar" x="162" y="0" width="24" height="120" rx="3"></rect>
+  </svg>
+</div>
+
+<div class="main">
+  <div class="card">
+
+    <div id="authView">
+      <div class="tabs" role="tablist">
+        <button class="tab" id="loginTab" role="tab" aria-selected="true">Log in</button>
+        <button class="tab" id="signupTab" role="tab" aria-selected="false">Sign up</button>
+      </div>
+
+      <h2 id="formTitle">Log in to your account</h2>
+      <p class="sub" id="formSub">Enter your email and password.</p>
+
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" required>
+          <div class="err" id="emailErr"></div>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required minlength="8">
+          <div class="hint" id="pwHint" style="display:none">At least 8 characters.</div>
+          <div class="err" id="passwordErr"></div>
+        </div>
+        <div class="row-between">
+          <label><input type="checkbox" id="remember"> Remember me</label>
+          <a href="#" id="forgotLink">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn" id="submitBtn">
+          <span class="spinner"></span><span class="btn-label" id="submitLabel">Log in</span>
+        </button>
+        <p class="formnote" id="formErr" style="color:var(--coral);display:none"></p>
+      </form>
+    </div>
+
+    <div class="success" id="successView">
+      <div class="check"><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg></div>
+      <h2>You're in</h2>
+      <p id="successMsg">Redirecting to your dashboard…</p>
+      <button class="btn" id="backBtn" style="background:transparent;color:var(--forest);border:1px solid #d8cfae">Back to login</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const authApi = {
+  async signup(email, password){
+    await delay(700);
+    const users = JSON.parse(localStorage.getItem('sprout_users') || '{}');
+    if(users[email]) return {ok:false, error:'An account with that email already exists.'};
+    users[email] = {password};
+    localStorage.setItem('sprout_users', JSON.stringify(users));
+    return {ok:true};
+  },
+  async login(email, password){
+    await delay(700);
+    const users = JSON.parse(localStorage.getItem('sprout_users') || '{}');
+    const u = users[email];
+    if(!u) return {ok:false, error:'No account found with that email.'};
+    if(u.password !== password) return {ok:false, error:'Incorrect password.'};
+    return {ok:true};
+  }
+};
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+let mode = 'login';
+const loginTab=document.getElementById('loginTab'), signupTab=document.getElementById('signupTab');
+const formTitle=document.getElementById('formTitle'), formSub=document.getElementById('formSub');
+const submitLabel=document.getElementById('submitLabel'), submitBtn=document.getElementById('submitBtn');
+const pwHint=document.getElementById('pwHint'), formErr=document.getElementById('formErr');
+const emailInput=document.getElementById('email'), passwordInput=document.getElementById('password');
+const emailErr=document.getElementById('emailErr'), passwordErr=document.getElementById('passwordErr');
+
+function setMode(m){
+  mode=m;
+  loginTab.setAttribute('aria-selected', m==='login');
+  signupTab.setAttribute('aria-selected', m==='signup');
+  formTitle.textContent = m==='login' ? 'Log in to your account' : 'Create your account';
+  formSub.textContent = m==='login' ? 'Enter your email and password.' : 'Takes about ninety seconds.';
+  submitLabel.textContent = m==='login' ? 'Log in' : 'Sign up';
+  passwordInput.setAttribute('autocomplete', m==='login' ? 'current-password' : 'new-password');
+  pwHint.style.display = m==='signup' ? 'block' : 'none';
+  formErr.style.display='none'; emailErr.textContent=''; passwordErr.textContent='';
+}
+loginTab.addEventListener('click', ()=>setMode('login'));
+signupTab.addEventListener('click', ()=>setMode('signup'));
+
+document.getElementById('authForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  emailErr.textContent=''; passwordErr.textContent=''; formErr.style.display='none';
+  const email=emailInput.value.trim(), password=passwordInput.value;
+  let bad=false;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ emailErr.textContent='Enter a valid email address.'; bad=true; }
+  if(mode==='signup' && password.length<8){ passwordErr.textContent='Password needs at least 8 characters.'; bad=true; }
+  if(mode==='login' && password.length===0){ passwordErr.textContent='Enter your password.'; bad=true; }
+  if(bad) return;
+
+  submitBtn.disabled=true; submitBtn.classList.add('loading');
+  const res = mode==='login' ? await authApi.login(email,password) : await authApi.signup(email,password);
+  submitBtn.disabled=false; submitBtn.classList.remove('loading');
+
+  if(!res.ok){ formErr.textContent=res.error; formErr.style.display='block'; return; }
+
+  localStorage.setItem('sprout_session', email);
+  document.getElementById('authView').style.display='none';
+  const successView=document.getElementById('successView');
+  successView.classList.add('show');
+  document.getElementById('successMsg').textContent = mode==='login'
+    ? 'Redirecting to your dashboard…' : 'Your account is ready. Redirecting…';
+  setTimeout(function(){ window.location.href='dashboard.html'; }, 1100);
+});
+
+if(localStorage.getItem('sprout_session')){ window.location.href='dashboard.html'; }
+
+document.getElementById('backBtn').addEventListener('click', function(){
+  document.getElementById('successView').classList.remove('show');
+  document.getElementById('authView').style.display='block';
+  document.getElementById('authForm').reset();
+  setMode('login');
+});
+
+document.getElementById('forgotLink').addEventListener('click', function(e){
+  e.preventDefault();
+  alert('This demo doesn\'t send real emails — wire this up to your password-reset endpoint.');
+});
+</script>
+</body>
+</html>
